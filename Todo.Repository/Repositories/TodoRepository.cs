@@ -19,8 +19,6 @@ namespace Todo.Repository.Repositories
             string procedure = "PRC_LISTAR_ATIVIDADES";
             var listaFinal = new List<Atividade>();
 
-
-            //var resultado = ListarTodosAsync(procedure);
             var resultado = _connection.Query<Atividade>(procedure);
 
             foreach (var item in resultado)

@@ -6,6 +6,10 @@ using System.Data.SqlClient;
 using Todo.Shared.Models;
 using Todo.Repository.Repositories.Contracts;
 using Todo.Web.ViewModel.Todo;
+using Todo.Web.Commands;
+using Todo.Web.Handlers;
+using Todo.Repository.Repositories;
+using Todo.Shared.Commands;
 
 namespace Todo.Web.Controllers
 {
@@ -29,7 +33,6 @@ namespace Todo.Web.Controllers
         [HttpGet("v1/atividades/listar")]
         public List<Atividade> ListarAtividade()
         {
-            string connectionString = "Server=localhost, 1433;Database=TodoList;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=True;Connection Timeout=30";
             var listaFinal = _todoRepository.ListarTodasAtividades();
 
             return listaFinal;
@@ -37,33 +40,17 @@ namespace Todo.Web.Controllers
         }
 
         [HttpPost("v1/atividades/criar")]
-        public string CriarAtividade(
+        public ICommandResult CriarAtividade(
                 [FromBody] AtividadeViewModel atividade
             )
         {
-            string connectionString = "Server=localhost, 1433;Database=TodoList;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=True;Connection Timeout=30";
 
-            var parametros = new
-            {
-                titulo = atividade.Titulo,
-                conclusao = true,
-                dataCriacao = DateTime.Now
-            };
+            var command = new CriarAtividadeCommand(atividade.Titulo);
 
-            using (IDbConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
+            var handler = new AtividadeHandler(_todoRepository);
 
-                connection.Execute(
-                    "PRC_CRIAR_ATIVIDADE",
-                    parametros,
-                    commandType: CommandType.StoredProcedure
-                );
+            return handler.Handle(command);
 
-                connection.Close();
-            };
-
-            return "Chamou";
         }
     }
 }
