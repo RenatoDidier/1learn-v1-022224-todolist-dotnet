@@ -1,3 +1,5 @@
+using Todo.Web.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +8,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//
+var stringConexao = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddSqlConnection(stringConexao);
+builder.Services.AddRepositories();
 
 // Configuração do CORS para acesso a qualquer tipo de chamada externa.
 builder.Services.AddCors(options =>
