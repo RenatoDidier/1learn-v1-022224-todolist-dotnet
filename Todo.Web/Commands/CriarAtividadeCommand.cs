@@ -21,8 +21,8 @@ namespace Todo.Web.Commands
             AddNotifications(
                 new Contract<CriarAtividadeCommand>()
                     .Requires()
-                    .IsLowerThan(Titulo.Length, 3, "A atividade precisa ter mais do que 3 caracteres")
-                    .IsGreaterThan(Titulo.Length, 300, "A atividade precisa ter, no máximo, 300 caracteres")
+                    .IsGreaterThan(Titulo.Length, 4, "Titulo", "A atividade precisa ter, no mínimo, 4 caracteres")
+                    .IsLowerThan(Titulo.Length, 300, "Titulo", "A atividade precisa ter menos do que 300 caracteres")
                 );
         }
     }

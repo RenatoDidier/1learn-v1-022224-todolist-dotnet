@@ -3,6 +3,8 @@ using Todo.Repository.Configuration;
 using Todo.Shared.Models;
 using Todo.Repository.Repositories.Contracts;
 using Dapper;
+using Todo.Shared.ViewModel;
+using System.Data;
 
 namespace Todo.Repository.Repositories
 {
@@ -12,14 +14,17 @@ namespace Todo.Repository.Repositories
 
         public TodoRepository(SqlConnection connection)
             => _connection = connection;
-        
+
 
         public List<Atividade> ListarTodasAtividades()
         {
             string procedure = "PRC_LISTAR_ATIVIDADES";
             var listaFinal = new List<Atividade>();
 
-            var resultado = _connection.Query<Atividade>(procedure);
+            var resultado = _connection.Query<Atividade>(
+                    procedure,
+                    commandType: CommandType.StoredProcedure
+                );
 
             foreach (var item in resultado)
             {
@@ -37,6 +42,27 @@ namespace Todo.Repository.Repositories
 
             return listaFinal;
         }
+
+
+        public bool CriarAtividade(NovaAtividadeViewModel atividade)
+        {
+            string procedure = "PRC_CRIAR_ATIVIDADE";
+
+            object novaAtividade = new { 
+                Titulo = atividade.Titulo, 
+                Conclusao = atividade.Conclusao, 
+                DataCriacao = atividade.DataCriacao 
+            };
+
+            var resultado = _connection.Execute(
+                    procedure,
+                    novaAtividade,
+                    commandType: CommandType.StoredProcedure
+                );
+
+            return resultado > 0;
+        }
+
 
     }
 }

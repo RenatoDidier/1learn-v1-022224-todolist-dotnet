@@ -1,8 +1,8 @@
 ﻿using Todo.Repository.Repositories.Contracts;
 using Todo.Shared.Commands;
-using Todo.Shared.Models;
 using Todo.Web.Commands;
 using Todo.Web.Handlers.Interfaces;
+using Todo.Shared.ViewModel;
 
 namespace Todo.Web.Handlers
 {
@@ -23,7 +23,7 @@ namespace Todo.Web.Handlers
             {
                 command.ValidarEnvioDados();
 
-                if (command.IsValid)
+                if (!command.IsValid)
                 {
                     return new CommandResult("Requisição inválida", 400, command.Notifications);
                 
@@ -34,18 +34,30 @@ namespace Todo.Web.Handlers
             }
             // 1 - Criar o Usuário
 
-            List<Atividade> listaFinal = new List<Atividade>();
+            NovaAtividadeViewModel novaAtividade = new NovaAtividadeViewModel(command.Titulo);
 
             try
             {
-                listaFinal = _repository.ListarTodasAtividades();
+                var resultadoCriacao = _repository.CriarAtividade(novaAtividade);
+
+                if (!resultadoCriacao)
+                {
+                    return new CommandResult("Não foi possível inserir a atividade", 400);
+                }
+
             } catch
             {
                 return new CommandResult("Erro ao acessar o banco", 400);
             }
 
             // 2 - Retorna o resultado
-            return new CommandResult("Criação de atividade com sucesso");
+            RespostaDados retornoDados = new RespostaDados();
+            retornoDados.Titulo = novaAtividade.Titulo;
+            //retornoDados.Conclusao = (novaAtividade.Conclusao == 1) ? true : false;
+            //retornoDados.Conclusao = novaAtividade.Conclusao;
+            retornoDados.DataCriacao = novaAtividade.DataCriacao;
+
+            return new CommandResult("Criação de atividade com sucesso", retornoDados);
         }
     }
 }
