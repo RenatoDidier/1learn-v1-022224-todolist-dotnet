@@ -26,6 +26,8 @@ namespace Todo.Web.Extensions
         public static void AddHandlers(this IServiceCollection services)
         {
             services.AddTransient<IHandler<CriarAtividadeCommand>, AtividadeHandler>();
+            services.AddTransient<IHandler<EditarAtividadeCommand>, AtividadeHandler>();
+            services.AddTransient<IHandler<ExcluirAtividadeCommand>, AtividadeHandler>();
         }
     }
 }

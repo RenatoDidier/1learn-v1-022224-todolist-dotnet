@@ -12,17 +12,21 @@ namespace Todo.Repository.Repositories
     {
         private readonly SqlConnection _connection;
 
+        private readonly string PRC_LISTAR_ATIVIDADES = "PRC_LISTAR_ATIVIDADES";
+        private readonly string PRC_CRIAR_ATIVIDADE = "PRC_CRIAR_ATIVIDADE";
+        private readonly string PRC_EDITAR_ATIVIDADE = "PRC_EDITAR_ATIVIDADE";
+        private readonly string PRC_EXCLUIR_ATIVIDADE = "PRC_EXCLUIR_ATIVIDADE";
+
         public TodoRepository(SqlConnection connection)
             => _connection = connection;
 
 
         public List<Atividade> ListarTodasAtividades()
         {
-            string procedure = "PRC_LISTAR_ATIVIDADES";
             var listaFinal = new List<Atividade>();
 
             var resultado = _connection.Query<Atividade>(
-                    procedure,
+                    PRC_LISTAR_ATIVIDADES,
                     commandType: CommandType.StoredProcedure
                 );
 
@@ -33,7 +37,6 @@ namespace Todo.Repository.Repositories
                 atividadeItem.Id = item.Id;
                 atividadeItem.Titulo = item.Titulo;
                 atividadeItem.Conclusao = BitConverter.ToBoolean(item.ByteBanco, 0);
-                //atividadeItem.Conclusao = item.Conclusao;
                 atividadeItem.DataCriacao = item.DataCriacao;
                 atividadeItem.DataUltimaModificacao = item.DataUltimaModificacao;
 
@@ -44,19 +47,36 @@ namespace Todo.Repository.Repositories
         }
 
 
-        public bool CriarAtividade(NovaAtividadeViewModel atividade)
+        public bool CriarAtividade(object parametros)
         {
-            string procedure = "PRC_CRIAR_ATIVIDADE";
-
-            object novaAtividade = new { 
-                Titulo = atividade.Titulo, 
-                Conclusao = atividade.Conclusao, 
-                DataCriacao = atividade.DataCriacao 
-            };
 
             var resultado = _connection.Execute(
-                    procedure,
-                    novaAtividade,
+                    PRC_CRIAR_ATIVIDADE,
+                    parametros,
+                    commandType: CommandType.StoredProcedure
+                );
+
+            return resultado > 0;
+        }
+
+        public bool EditarAtividade(object parametros)
+        {
+
+            var resultado = _connection.Execute(
+                    PRC_EDITAR_ATIVIDADE,
+                    parametros,
+                    commandType: CommandType.StoredProcedure
+                );
+
+            return resultado > 0;
+        }
+
+        public bool ExcluirAtividade(object parametros)
+        {
+
+            var resultado = _connection.Execute(
+                    PRC_EXCLUIR_ATIVIDADE,
+                    parametros,
                     commandType: CommandType.StoredProcedure
                 );
 

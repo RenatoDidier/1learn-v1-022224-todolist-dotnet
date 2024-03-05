@@ -7,6 +7,8 @@ namespace Todo.Repository.Repositories.Contracts
     {
         List<Atividade> ListarTodasAtividades();
 
-        bool CriarAtividade(NovaAtividadeViewModel atividade);
+        bool CriarAtividade(object parametros);
+        bool EditarAtividade(object parametros);
+        bool ExcluirAtividade(object parametros);
     }
 }

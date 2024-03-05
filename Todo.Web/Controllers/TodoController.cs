@@ -18,11 +18,20 @@ namespace Todo.Web.Controllers
     {
         private readonly ITodoRepository _todoRepository;
         private readonly IHandler<CriarAtividadeCommand> _handlerCriarAtividade;
+        private readonly IHandler<EditarAtividadeCommand> _handlerEditarAtividade;
+        private readonly IHandler<ExcluirAtividadeCommand> _handlerExcluirAtividade;
 
-        public TodoController(ITodoRepository todoRepository, IHandler<CriarAtividadeCommand> handlerCriarAtividade)
+        public TodoController(
+                ITodoRepository todoRepository, 
+                IHandler<CriarAtividadeCommand> handlerCriarAtividade,
+                IHandler<EditarAtividadeCommand> handlerEditarAtividade,
+                IHandler<ExcluirAtividadeCommand> handlerExcluirAtividade
+            )
         {
             _todoRepository = todoRepository;
             _handlerCriarAtividade = handlerCriarAtividade;
+            _handlerEditarAtividade = handlerEditarAtividade;
+            _handlerExcluirAtividade = handlerExcluirAtividade;
         }
 
         [HttpGet("/")]
@@ -51,6 +60,26 @@ namespace Todo.Web.Controllers
 
             return acaoCriarAtividade;
 
+        }
+
+        [HttpPut("v1/atividades/editar")]
+        public ICommandResult EditarAtividade(
+                [FromBody] EditarAtividadeCommand atividade
+            )
+        {
+            var acaoEditarAtividade = _handlerEditarAtividade.Handle(atividade);
+
+            return acaoEditarAtividade;
+        }
+
+        [HttpDelete("v1/atividades/excluir")]
+        public ICommandResult ExcluirAtividade(
+                [FromBody] ExcluirAtividadeCommand atividade
+            )
+        {
+            var acaoExcluirAtividade = _handlerExcluirAtividade.Handle(atividade);
+
+            return acaoExcluirAtividade;
         }
     }
 }
