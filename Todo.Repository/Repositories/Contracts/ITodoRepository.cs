@@ -5,10 +5,9 @@ namespace Todo.Repository.Repositories.Contracts
 {
     public interface ITodoRepository
     {
-        List<Atividade> ListarTodasAtividades();
-
-        bool CriarAtividade(object parametros);
-        bool EditarAtividade(object parametros);
-        bool ExcluirAtividade(object parametros);
+        Task<List<Atividade>> ListarTodasAtividadesAsync();
+        Task<bool> CriarAtividadeAsync(object parametros);
+        Task<bool> EditarAtividadeAsync(object parametros);
+        Task<bool> ExcluirAtividadeAsync(object parametros);
     }
 }

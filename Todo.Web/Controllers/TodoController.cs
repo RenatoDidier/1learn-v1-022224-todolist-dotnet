@@ -43,41 +43,41 @@ namespace Todo.Web.Controllers
         }
 
         [HttpGet("v1/atividades/listar")]
-        public List<Atividade> ListarAtividade()
+        public async Task<List<Atividade>> ListarAtividade()
         {
-            var listaFinal = _todoRepository.ListarTodasAtividades();
+            var listaFinal = await _todoRepository.ListarTodasAtividadesAsync();
 
             return listaFinal;
 
         }
 
         [HttpPost("v1/atividades/criar")]
-        public ICommandResult CriarAtividade(
+        public async Task<ICommandResult> CriarAtividade(
                 [FromBody] CriarAtividadeCommand atividade
             )
         {
-            var acaoCriarAtividade = _handlerCriarAtividade.Handle(atividade);
+            var acaoCriarAtividade = await _handlerCriarAtividade.Handle(atividade);
 
             return acaoCriarAtividade;
 
         }
 
         [HttpPut("v1/atividades/editar")]
-        public ICommandResult EditarAtividade(
+        public async Task<ICommandResult> EditarAtividade(
                 [FromBody] EditarAtividadeCommand atividade
             )
         {
-            var acaoEditarAtividade = _handlerEditarAtividade.Handle(atividade);
+            var acaoEditarAtividade = await _handlerEditarAtividade.Handle(atividade);
 
             return acaoEditarAtividade;
         }
 
         [HttpDelete("v1/atividades/excluir")]
-        public ICommandResult ExcluirAtividade(
+        public async Task<ICommandResult> ExcluirAtividade(
                 [FromBody] ExcluirAtividadeCommand atividade
             )
         {
-            var acaoExcluirAtividade = _handlerExcluirAtividade.Handle(atividade);
+            var acaoExcluirAtividade = await _handlerExcluirAtividade.Handle(atividade);
 
             return acaoExcluirAtividade;
         }

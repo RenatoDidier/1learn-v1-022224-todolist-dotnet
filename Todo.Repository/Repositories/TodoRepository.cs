@@ -21,11 +21,11 @@ namespace Todo.Repository.Repositories
             => _connection = connection;
 
 
-        public List<Atividade> ListarTodasAtividades()
+        public async Task<List<Atividade>> ListarTodasAtividadesAsync()
         {
             var listaFinal = new List<Atividade>();
 
-            var resultado = _connection.Query<Atividade>(
+            var resultado = await _connection.QueryAsync<Atividade>(
                     PRC_LISTAR_ATIVIDADES,
                     commandType: CommandType.StoredProcedure
                 );
@@ -47,10 +47,10 @@ namespace Todo.Repository.Repositories
         }
 
 
-        public bool CriarAtividade(object parametros)
+        public async Task<bool> CriarAtividadeAsync(object parametros)
         {
 
-            var resultado = _connection.Execute(
+            var resultado = await _connection.ExecuteAsync(
                     PRC_CRIAR_ATIVIDADE,
                     parametros,
                     commandType: CommandType.StoredProcedure
@@ -59,10 +59,10 @@ namespace Todo.Repository.Repositories
             return resultado > 0;
         }
 
-        public bool EditarAtividade(object parametros)
+        public async Task<bool> EditarAtividadeAsync(object parametros)
         {
 
-            var resultado = _connection.Execute(
+            var resultado = await _connection.ExecuteAsync(
                     PRC_EDITAR_ATIVIDADE,
                     parametros,
                     commandType: CommandType.StoredProcedure
@@ -71,10 +71,10 @@ namespace Todo.Repository.Repositories
             return resultado > 0;
         }
 
-        public bool ExcluirAtividade(object parametros)
+        public async Task<bool> ExcluirAtividadeAsync(object parametros)
         {
 
-            var resultado = _connection.Execute(
+            var resultado = await _connection.ExecuteAsync(
                     PRC_EXCLUIR_ATIVIDADE,
                     parametros,
                     commandType: CommandType.StoredProcedure

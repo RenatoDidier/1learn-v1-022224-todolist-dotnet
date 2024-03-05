@@ -18,7 +18,8 @@ namespace Todo.Web.Handlers
             _repository = repository;
         }
 
-        public ICommandResult Handle(EditarAtividadeCommand command)
+        #region EditarAtividade
+        public async Task<ICommandResult> Handle(EditarAtividadeCommand command)
         {
             try
             {
@@ -45,7 +46,7 @@ namespace Todo.Web.Handlers
                     DataUltimaModificacao = DateTime.Now,
                 };
 
-                var resultado = _repository.EditarAtividade(parametro);
+                var resultado = await _repository.EditarAtividadeAsync(parametro);
 
                 if (!resultado)
                 {
@@ -59,8 +60,10 @@ namespace Todo.Web.Handlers
             return new CommandResult("Atividade alterada com sucesso");
 
         }
+        #endregion
 
-        public ICommandResult Handle(CriarAtividadeCommand command)
+        #region CriarAtividade
+        public async Task<ICommandResult> Handle(CriarAtividadeCommand command)
         {
             // 0 - Fail Fast validation
             try
@@ -87,7 +90,7 @@ namespace Todo.Web.Handlers
                     DataCriacao = DateTime.Now
                 };
 
-                var resultadoCriacao = _repository.CriarAtividade(parametro);
+                var resultadoCriacao = await _repository.CriarAtividadeAsync(parametro);
 
                 if (!resultadoCriacao)
                 {
@@ -106,8 +109,10 @@ namespace Todo.Web.Handlers
 
             return new CommandResult("Criação de atividade com sucesso", retornoDados);
         }
+        #endregion
 
-        public ICommandResult Handle(ExcluirAtividadeCommand command)
+        #region ExcluirAtividade
+        public async Task<ICommandResult> Handle(ExcluirAtividadeCommand command)
         {
             try
             {
@@ -130,7 +135,7 @@ namespace Todo.Web.Handlers
                     DataExclusao = DateTime.Now
                 };
 
-                var resultado = _repository.ExcluirAtividade(parametros);
+                var resultado = await _repository.ExcluirAtividadeAsync(parametros);
 
                 if (!resultado)
                 {
@@ -144,5 +149,6 @@ namespace Todo.Web.Handlers
 
             return new CommandResult("Atividade excluída com sucesso");
         }
+        #endregion
     }
 }
