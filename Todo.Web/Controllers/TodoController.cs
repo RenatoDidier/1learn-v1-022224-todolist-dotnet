@@ -20,18 +20,21 @@ namespace Todo.Web.Controllers
         private readonly IHandler<CriarAtividadeCommand> _handlerCriarAtividade;
         private readonly IHandler<EditarAtividadeCommand> _handlerEditarAtividade;
         private readonly IHandler<ExcluirAtividadeCommand> _handlerExcluirAtividade;
+        private readonly IHandler<ListarAtividadeCommand> _handlerListarAtividade;
 
         public TodoController(
                 ITodoRepository todoRepository, 
                 IHandler<CriarAtividadeCommand> handlerCriarAtividade,
                 IHandler<EditarAtividadeCommand> handlerEditarAtividade,
-                IHandler<ExcluirAtividadeCommand> handlerExcluirAtividade
+                IHandler<ExcluirAtividadeCommand> handlerExcluirAtividade,
+                IHandler<ListarAtividadeCommand> handlerListarAtividade
             )
         {
             _todoRepository = todoRepository;
             _handlerCriarAtividade = handlerCriarAtividade;
             _handlerEditarAtividade = handlerEditarAtividade;
             _handlerExcluirAtividade = handlerExcluirAtividade;
+            _handlerListarAtividade = handlerListarAtividade;
         }
 
         [HttpGet("/")]
@@ -42,12 +45,14 @@ namespace Todo.Web.Controllers
             return "Está funcionando";
         }
 
-        [HttpGet("v1/atividades/listar")]
-        public async Task<List<Atividade>> ListarAtividade()
+        [HttpPost("v1/atividades/listar")]
+        public async Task<ICommandResult> ListarAtividade(
+                [FromBody] ListarAtividadeCommand atividade
+            )
         {
-            var listaFinal = await _todoRepository.ListarTodasAtividadesAsync();
+            var acaoListarAtividade = await _handlerListarAtividade.Handle(atividade);
 
-            return listaFinal;
+            return acaoListarAtividade;
 
         }
 

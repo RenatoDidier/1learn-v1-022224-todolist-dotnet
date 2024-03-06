@@ -1,9 +1,7 @@
 ﻿using System.Data.SqlClient;
-using Todo.Repository.Configuration;
 using Todo.Shared.Models;
 using Todo.Repository.Repositories.Contracts;
 using Dapper;
-using Todo.Shared.ViewModel;
 using System.Data;
 
 namespace Todo.Repository.Repositories
@@ -21,12 +19,13 @@ namespace Todo.Repository.Repositories
             => _connection = connection;
 
 
-        public async Task<List<Atividade>> ListarTodasAtividadesAsync()
+        public async Task<List<Atividade>> ListarTodasAtividadesAsync(object parametros)
         {
-            var listaFinal = new List<Atividade>();
+            List<Atividade> listaFinal = new List<Atividade>();
 
             var resultado = await _connection.QueryAsync<Atividade>(
                     PRC_LISTAR_ATIVIDADES,
+                    parametros,
                     commandType: CommandType.StoredProcedure
                 );
 

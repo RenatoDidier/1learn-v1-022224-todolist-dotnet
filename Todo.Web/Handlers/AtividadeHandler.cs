@@ -1,5 +1,6 @@
 ﻿using Todo.Repository.Repositories.Contracts;
 using Todo.Shared.Commands;
+using Todo.Shared.Models;
 using Todo.Web.Commands;
 using Todo.Web.Handlers.Interfaces;
 
@@ -8,7 +9,8 @@ namespace Todo.Web.Handlers
     public class AtividadeHandler
         : IHandler<CriarAtividadeCommand>, 
             IHandler<EditarAtividadeCommand>,
-            IHandler<ExcluirAtividadeCommand>
+            IHandler<ExcluirAtividadeCommand>,
+            IHandler<ListarAtividadeCommand>
 
     {
         private readonly ITodoRepository _repository;
@@ -16,6 +18,37 @@ namespace Todo.Web.Handlers
         public AtividadeHandler(ITodoRepository repository)
         {
             _repository = repository;
+        }
+
+        public async Task<ICommandResult> Handle(ListarAtividadeCommand command)
+        {
+
+            try
+            {
+                command.ValidarEnvioDados();
+
+                if (!command.IsValid)
+                    return new CommandResult("Erro no envio dos dados", 401, command.Notifications);
+            } catch
+            {
+                return new CommandResult("Erro interno no servidor", 500);
+            }
+
+            try
+            {
+                var parametros = new
+                {
+                    command.Titulo,
+                };
+
+                List<Atividade> resultado = await _repository.ListarTodasAtividadesAsync(parametros);
+
+                return new CommandResult(resultado);
+
+            } catch
+            {
+                return new CommandResult("Erro ao conectar no banco", 500);
+            }
         }
 
         #region EditarAtividade
