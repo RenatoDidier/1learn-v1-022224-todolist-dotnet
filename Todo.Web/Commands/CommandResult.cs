@@ -1,6 +1,7 @@
 ﻿using Flunt.Notifications;
 using Todo.Shared.Commands;
 using Todo.Shared.Models;
+using Todo.Shared.ViewModel;
 using Todo.Web.UseCases;
 
 namespace Todo.Web.Commands
@@ -17,10 +18,16 @@ namespace Todo.Web.Commands
             Status = 201;
             Notifications = null;
         }        
-        public CommandResult(List<Atividade> listaDados)
+        public CommandResult(List<AtividadeViewModel> listaDados)
         {
             ListaDados = listaDados;
             Status = 201;
+            Notifications = null;
+        }        
+        public CommandResult(int status)
+        {
+            ListaDados = new List<AtividadeViewModel>();
+            Status = status;
             Notifications = null;
         }
         public CommandResult(string mensagem, RespostaDados dados)
@@ -38,7 +45,7 @@ namespace Todo.Web.Commands
             Notifications = notifications;
         }
 
-        public List<Atividade> ListaDados { get; set; } = new List<Atividade>();
+        public List<AtividadeViewModel> ListaDados { get; set; } = new List<AtividadeViewModel>();
         public RespostaDados? Dados { get; set; }
 
 

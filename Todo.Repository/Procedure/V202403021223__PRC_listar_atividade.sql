@@ -8,6 +8,6 @@ BEGIN
 		[Id], [Titulo], [Conclusao] AS [ByteBanco]
 	FROM [Atividade]
 		WHERE 
-		[DataExclusao] IS NULL AND @Titulo = '' OR [Titulo] LIKE '%' + @Titulo + '%'
+		[DataExclusao] IS NULL AND (@Titulo = '' OR [Titulo] LIKE '%' + @Titulo + '%')
 
 END

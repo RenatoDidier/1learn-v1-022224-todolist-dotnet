@@ -1,6 +1,7 @@
 ﻿using Todo.Repository.Repositories.Contracts;
 using Todo.Shared.Commands;
 using Todo.Shared.Models;
+using Todo.Shared.ViewModel;
 using Todo.Web.Commands;
 using Todo.Web.Handlers.Interfaces;
 
@@ -41,7 +42,10 @@ namespace Todo.Web.Handlers
                     command.Titulo,
                 };
 
-                List<Atividade> resultado = await _repository.ListarTodasAtividadesAsync(parametros);
+                List<AtividadeViewModel?> resultado = await _repository.ListarTodasAtividadesAsync(parametros);
+
+                if (resultado == null)
+                    return new CommandResult(201);
 
                 return new CommandResult(resultado);
 

@@ -10,6 +10,7 @@ using Todo.Web.Handlers;
 using Todo.Repository.Repositories;
 using Todo.Shared.Commands;
 using Todo.Web.Handlers.Interfaces;
+using Todo.Shared.ViewModel;
 
 namespace Todo.Web.Controllers
 {
@@ -54,6 +55,23 @@ namespace Todo.Web.Controllers
 
             return acaoListarAtividade;
 
+        }
+
+        [HttpGet("v1/atividades/listar/{id}")]
+        public async Task<AtividadeViewModel?> ListarAtividadePorId(
+                [FromRoute] int id
+            )
+        {
+            var parametro = new
+            {
+                id
+            };
+            var retornoRepository = await _todoRepository.ListarAtividadePorIdAsync(parametro);
+
+            //RespostaDados respostaDados = new RespostaDados();
+
+            return retornoRepository;
+            //return new CommandResult("Erro no envio dos dados", 401, command.Notifications);
         }
 
         [HttpPost("v1/atividades/criar")]

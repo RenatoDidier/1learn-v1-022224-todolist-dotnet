@@ -3,6 +3,7 @@ using Todo.Shared.Models;
 using Todo.Repository.Repositories.Contracts;
 using Dapper;
 using System.Data;
+using Todo.Shared.ViewModel;
 
 namespace Todo.Repository.Repositories
 {
@@ -11,6 +12,7 @@ namespace Todo.Repository.Repositories
         private readonly SqlConnection _connection;
 
         private readonly string PRC_LISTAR_ATIVIDADES = "PRC_LISTAR_ATIVIDADES";
+        private readonly string PRC_LISTAR_ATIVIDADE_POR_ID = "PRC_LISTAR_ATIVIDADE_POR_ID";
         private readonly string PRC_CRIAR_ATIVIDADE = "PRC_CRIAR_ATIVIDADE";
         private readonly string PRC_EDITAR_ATIVIDADE = "PRC_EDITAR_ATIVIDADE";
         private readonly string PRC_EXCLUIR_ATIVIDADE = "PRC_EXCLUIR_ATIVIDADE";
@@ -19,9 +21,9 @@ namespace Todo.Repository.Repositories
             => _connection = connection;
 
 
-        public async Task<List<Atividade>> ListarTodasAtividadesAsync(object parametros)
+        public async Task<List<AtividadeViewModel?>> ListarTodasAtividadesAsync(object parametros)
         {
-            List<Atividade> listaFinal = new List<Atividade>();
+            List<AtividadeViewModel> listaFinal = new List<AtividadeViewModel>();
 
             var resultado = await _connection.QueryAsync<Atividade>(
                     PRC_LISTAR_ATIVIDADES,
@@ -29,20 +31,41 @@ namespace Todo.Repository.Repositories
                     commandType: CommandType.StoredProcedure
                 );
 
+            if (resultado == null)
+                return null;
+
             foreach (var item in resultado)
             {
-                Atividade atividadeItem = new Atividade();
-
-                atividadeItem.Id = item.Id;
-                atividadeItem.Titulo = item.Titulo;
-                atividadeItem.Conclusao = BitConverter.ToBoolean(item.ByteBanco, 0);
-                atividadeItem.DataCriacao = item.DataCriacao;
-                atividadeItem.DataUltimaModificacao = item.DataUltimaModificacao;
+                AtividadeViewModel atividadeItem = new AtividadeViewModel(
+                    item.Id, 
+                    item.Titulo,
+                    BitConverter.ToBoolean(item.ByteBanco, 0)
+                    );
 
                 listaFinal.Add(atividadeItem);
             }
 
             return listaFinal;
+        }
+
+        public async Task<AtividadeViewModel?> ListarAtividadePorIdAsync(object parametros)
+        {
+            var resultado = await _connection.QueryFirstOrDefaultAsync<Atividade>(
+                    PRC_LISTAR_ATIVIDADE_POR_ID,
+                    parametros,
+                    commandType: CommandType.StoredProcedure
+                );
+            if (resultado == null)
+                return null;
+
+
+            AtividadeViewModel resultadoFinal = new AtividadeViewModel();
+
+            resultadoFinal.Id = resultado.Id;
+            resultadoFinal.Titulo = resultado.Titulo;
+            resultadoFinal.Conclusao = BitConverter.ToBoolean(resultado.ByteBanco, 0);
+
+            return resultadoFinal;
         }
 
 
