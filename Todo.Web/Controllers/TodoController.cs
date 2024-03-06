@@ -1,16 +1,8 @@
-﻿using Dapper;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
-using System.Data;
-using System.Data.SqlClient;
-using Todo.Shared.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Todo.Repository.Repositories.Contracts;
 using Todo.Web.Commands;
-using Todo.Web.Handlers;
-using Todo.Repository.Repositories;
 using Todo.Shared.Commands;
 using Todo.Web.Handlers.Interfaces;
-using Todo.Shared.ViewModel;
 
 namespace Todo.Web.Controllers
 {
@@ -58,7 +50,7 @@ namespace Todo.Web.Controllers
         }
 
         [HttpGet("v1/atividades/listar/{id}")]
-        public async Task<AtividadeViewModel?> ListarAtividadePorId(
+        public async Task<ICommandResult?> ListarAtividadePorId(
                 [FromRoute] int id
             )
         {
@@ -68,10 +60,11 @@ namespace Todo.Web.Controllers
             };
             var retornoRepository = await _todoRepository.ListarAtividadePorIdAsync(parametro);
 
-            //RespostaDados respostaDados = new RespostaDados();
+            if (retornoRepository == null)
+                return new CommandResult(201);
 
-            return retornoRepository;
-            //return new CommandResult("Erro no envio dos dados", 401, command.Notifications);
+
+            return new CommandResult(201, retornoRepository);
         }
 
         [HttpPost("v1/atividades/criar")]

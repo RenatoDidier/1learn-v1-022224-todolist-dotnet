@@ -18,7 +18,7 @@ namespace Todo.Web.Commands
             Status = 201;
             Notifications = null;
         }        
-        public CommandResult(List<AtividadeViewModel> listaDados)
+        public CommandResult(List<AtividadeViewModel?> listaDados)
         {
             ListaDados = listaDados;
             Status = 201;
@@ -26,11 +26,17 @@ namespace Todo.Web.Commands
         }        
         public CommandResult(int status)
         {
-            ListaDados = new List<AtividadeViewModel>();
+            ListaDados = new List<AtividadeViewModel?>();
+            Status = status;
+            Notifications = null;
+        }        
+        public CommandResult(int status, AtividadeViewModel dados)
+        {
+            Dados = dados;
             Status = status;
             Notifications = null;
         }
-        public CommandResult(string mensagem, RespostaDados dados)
+        public CommandResult(string mensagem, AtividadeViewModel dados)
         {
             Mensagem = mensagem;
             Status = 201;
@@ -45,15 +51,9 @@ namespace Todo.Web.Commands
             Notifications = notifications;
         }
 
-        public List<AtividadeViewModel> ListaDados { get; set; } = new List<AtividadeViewModel>();
-        public RespostaDados? Dados { get; set; }
+        public List<AtividadeViewModel?> ListaDados { get; set; } = new List<AtividadeViewModel?>();
+        public AtividadeViewModel? Dados { get; set; }
 
 
-    }
-    public class RespostaDados
-    {
-        public int Id { get; set; }
-        public string Titulo { get; set; }
-        public bool Conclusao { get; set; }
     }
 }

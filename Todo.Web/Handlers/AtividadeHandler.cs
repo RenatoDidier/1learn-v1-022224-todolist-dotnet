@@ -24,6 +24,7 @@ namespace Todo.Web.Handlers
         public async Task<ICommandResult> Handle(ListarAtividadeCommand command)
         {
 
+            #region Fail Fast Validation
             try
             {
                 command.ValidarEnvioDados();
@@ -34,12 +35,15 @@ namespace Todo.Web.Handlers
             {
                 return new CommandResult("Erro interno no servidor", 500);
             }
+            #endregion
 
+            #region Executar a consulta no banco e retornar dados
             try
             {
                 var parametros = new
                 {
                     command.Titulo,
+                    command.Conclusao
                 };
 
                 List<AtividadeViewModel?> resultado = await _repository.ListarTodasAtividadesAsync(parametros);
@@ -53,11 +57,13 @@ namespace Todo.Web.Handlers
             {
                 return new CommandResult("Erro ao conectar no banco", 500);
             }
+            #endregion
         }
 
         #region EditarAtividade
         public async Task<ICommandResult> Handle(EditarAtividadeCommand command)
         {
+            #region Fail Fast Validation
             try
             {
                 command.ValidarEnvioDados();
@@ -72,13 +78,36 @@ namespace Todo.Web.Handlers
             {
                 return new CommandResult("Erro interno no servidor", 500);
             }
+            #endregion
 
+            AtividadeViewModel? retornoAtividade;
+            #region Validar Existência de Atividade
+            try
+            {
+                var parametros = new
+                {
+                    command.Id
+                };
+
+                retornoAtividade = await _repository.ListarAtividadePorIdAsync(parametros);
+
+                if (retornoAtividade == null)
+                    return new CommandResult("EEE01 - Não foi possível executar a sua ação", 400);
+
+
+            } catch
+            {
+                return new CommandResult("Problema ao acessar o banco", 500);
+            }
+            #endregion
+
+            #region Executar Edição de Atividade
             try
             {
                 object parametro = new
                 {
                     command.Id,
-                    command.Titulo,
+                    Titulo = command.Titulo ?? retornoAtividade.Titulo,
                     command.Conclusao,
                     DataUltimaModificacao = DateTime.Now,
                 };
@@ -87,14 +116,17 @@ namespace Todo.Web.Handlers
 
                 if (!resultado)
                 {
-                    return new CommandResult("Erro ao editar atividade", 500);
+                    return new CommandResult("EEE02 - Erro ao editar atividade", 500);
                 }
             } catch
             {
                 return new CommandResult("Erro ao conectar no banco", 500);
             }
+            #endregion
 
+            #region Retorno da requisição
             return new CommandResult("Atividade alterada com sucesso");
+            #endregion
 
         }
         #endregion
@@ -102,7 +134,7 @@ namespace Todo.Web.Handlers
         #region CriarAtividade
         public async Task<ICommandResult> Handle(CriarAtividadeCommand command)
         {
-            // 0 - Fail Fast validation
+            #region Fail Fast validation
             try
             {
                 command.ValidarEnvioDados();
@@ -116,8 +148,9 @@ namespace Todo.Web.Handlers
             {
                 return new CommandResult("Erro interno no servidor", 500);
             }
-            // 1 - Criar o Usuário
+            #endregion
 
+            #region Criar o usuário
             try
             {
                 object parametro = new
@@ -138,19 +171,22 @@ namespace Todo.Web.Handlers
             {
                 return new CommandResult("Erro ao acessar o banco", 400);
             }
+            #endregion
 
-            // 2 - Retorna o resultado
-            RespostaDados retornoDados = new RespostaDados();
+            #region Retorna o resultado
+            AtividadeViewModel retornoDados = new AtividadeViewModel();
             retornoDados.Titulo = command.Titulo;
             retornoDados.Conclusao = false;
 
             return new CommandResult("Criação de atividade com sucesso", retornoDados);
+            #endregion
         }
         #endregion
 
         #region ExcluirAtividade
         public async Task<ICommandResult> Handle(ExcluirAtividadeCommand command)
         {
+            #region Fail Fast Validation
             try
             {
                 command.ValidarEnvioDados();
@@ -163,7 +199,30 @@ namespace Todo.Web.Handlers
             {
                 return new CommandResult("Erro interno no servidor", 500);
             }
+            #endregion
 
+            #region Validar se Atividade existe no banco
+
+            try
+            {
+                var parametros = new
+                {
+                    command.Id
+                };
+
+                var atividade = await _repository.ListarAtividadePorIdAsync(parametros);
+
+                if (atividade == null)
+                    return new CommandResult("EEA01 - Erro ao excluir Atividade", 400);
+
+            } catch
+            {
+                return new CommandResult("Erro ao acessar o banco", 500);
+            }
+
+            #endregion
+
+            #region Executar ação de exclusão
             try
             {
                 var parametros = new
@@ -176,15 +235,18 @@ namespace Todo.Web.Handlers
 
                 if (!resultado)
                 {
-                    return new CommandResult("Erro ao excluir Atividade", 400);
+                    return new CommandResult("EEA02 - Erro ao excluir Atividade", 400);
                 }
 
             } catch
             {
                 return new CommandResult("Problema ao acessar o banco", 400);
             }
+            #endregion
 
+            #region Retornar dados
             return new CommandResult("Atividade excluída com sucesso");
+            #endregion
         }
         #endregion
     }
