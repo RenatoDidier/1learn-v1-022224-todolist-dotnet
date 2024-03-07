@@ -7,8 +7,18 @@ namespace Todo.Web.Commands
 {
     public class EditarAtividadeCommand : Notifiable<Notification>, ICommand
     {
+        public EditarAtividadeCommand()
+        {
+            
+        }
+        public EditarAtividadeCommand(int id, bool conclusao, string titulo = "")
+        {
+            Id = id;
+            Conclusao = conclusao;
+            Titulo = titulo;
+        }
         public int Id { get; set; }
-        public string? Titulo { get; set; }
+        public string? Titulo { get; set; } = string.Empty;
         public bool Conclusao { get; set; }
         public DateTime DataUltimaAlteracao { get; set; } = DateTime.Now;
 

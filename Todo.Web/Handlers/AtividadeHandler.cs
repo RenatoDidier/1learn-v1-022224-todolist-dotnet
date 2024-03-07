@@ -1,4 +1,4 @@
-﻿using Todo.Repository.Repositories.Contracts;
+﻿using Todo.Shared.Repositories;
 using Todo.Shared.Commands;
 using Todo.Shared.Models;
 using Todo.Shared.ViewModel;
@@ -20,10 +20,9 @@ namespace Todo.Web.Handlers
         {
             _repository = repository;
         }
-
-        public async Task<ICommandResult> Handle(ListarAtividadeCommand command)
+        #region ListarAtividade
+        public async Task<CommandResult> Handle(ListarAtividadeCommand command)
         {
-
             #region Fail Fast Validation
             try
             {
@@ -40,13 +39,8 @@ namespace Todo.Web.Handlers
             #region Executar a consulta no banco e retornar dados
             try
             {
-                var parametros = new
-                {
-                    command.Titulo,
-                    command.Conclusao
-                };
 
-                List<AtividadeViewModel?> resultado = await _repository.ListarTodasAtividadesAsync(parametros);
+                List<AtividadeViewModel?> resultado = await _repository.ListarTodasAtividadesAsync(command.Titulo, command.Conclusao);
 
                 if (resultado == null)
                     return new CommandResult(201);
@@ -59,37 +53,26 @@ namespace Todo.Web.Handlers
             }
             #endregion
         }
+        #endregion
 
         #region EditarAtividade
-        public async Task<ICommandResult> Handle(EditarAtividadeCommand command)
+        public async Task<CommandResult> Handle(EditarAtividadeCommand command)
         {
             #region Fail Fast Validation
-            try
-            {
-                command.ValidarEnvioDados();
 
-                if (!command.IsValid)
-                {
-                    return new CommandResult("Requisição inválida", 400, command.Notifications);
+            command.ValidarEnvioDados();
 
-                }
-            }
-            catch
-            {
-                return new CommandResult("Erro interno no servidor", 500);
-            }
+            if (!command.IsValid)
+                return new CommandResult("Requisição inválida", 400, command.Notifications);
+
             #endregion
 
             AtividadeViewModel? retornoAtividade;
             #region Validar Existência de Atividade
             try
             {
-                var parametros = new
-                {
-                    command.Id
-                };
 
-                retornoAtividade = await _repository.ListarAtividadePorIdAsync(parametros);
+                retornoAtividade = await _repository.ListarAtividadePorIdAsync(command.Id);
 
                 if (retornoAtividade == null)
                     return new CommandResult("EEE01 - Não foi possível executar a sua ação", 400);
@@ -104,20 +87,11 @@ namespace Todo.Web.Handlers
             #region Executar Edição de Atividade
             try
             {
-                object parametro = new
-                {
-                    command.Id,
-                    Titulo = command.Titulo ?? retornoAtividade.Titulo,
-                    command.Conclusao,
-                    DataUltimaModificacao = DateTime.Now,
-                };
-
-                var resultado = await _repository.EditarAtividadeAsync(parametro);
+                var resultado = await _repository.EditarAtividadeAsync(command.Id, command.Titulo ?? retornoAtividade.Titulo, command.Conclusao);
 
                 if (!resultado)
-                {
                     return new CommandResult("EEE02 - Erro ao editar atividade", 500);
-                }
+
             } catch
             {
                 return new CommandResult("Erro ao conectar no banco", 500);
@@ -132,7 +106,7 @@ namespace Todo.Web.Handlers
         #endregion
 
         #region CriarAtividade
-        public async Task<ICommandResult> Handle(CriarAtividadeCommand command)
+        public async Task<CommandResult> Handle(CriarAtividadeCommand command)
         {
             #region Fail Fast validation
             try
@@ -140,10 +114,8 @@ namespace Todo.Web.Handlers
                 command.ValidarEnvioDados();
 
                 if (!command.IsValid)
-                {
                     return new CommandResult("Requisição inválida", 400, command.Notifications);
                 
-                }
             } catch
             {
                 return new CommandResult("Erro interno no servidor", 500);
@@ -153,19 +125,10 @@ namespace Todo.Web.Handlers
             #region Criar o usuário
             try
             {
-                object parametro = new
-                {
-                    command.Titulo,
-                    Conclusao = false,
-                    DataCriacao = DateTime.Now
-                };
-
-                var resultadoCriacao = await _repository.CriarAtividadeAsync(parametro);
+                var resultadoCriacao = await _repository.CriarAtividadeAsync(command.Titulo);
 
                 if (!resultadoCriacao)
-                {
                     return new CommandResult("Não foi possível inserir a atividade", 400);
-                }
 
             } catch
             {
@@ -184,7 +147,7 @@ namespace Todo.Web.Handlers
         #endregion
 
         #region ExcluirAtividade
-        public async Task<ICommandResult> Handle(ExcluirAtividadeCommand command)
+        public async Task<CommandResult> Handle(ExcluirAtividadeCommand command)
         {
             #region Fail Fast Validation
             try
@@ -205,12 +168,7 @@ namespace Todo.Web.Handlers
 
             try
             {
-                var parametros = new
-                {
-                    command.Id
-                };
-
-                var atividade = await _repository.ListarAtividadePorIdAsync(parametros);
+                var atividade = await _repository.ListarAtividadePorIdAsync(command.Id);
 
                 if (atividade == null)
                     return new CommandResult("EEA01 - Erro ao excluir Atividade", 400);
@@ -225,18 +183,10 @@ namespace Todo.Web.Handlers
             #region Executar ação de exclusão
             try
             {
-                var parametros = new
-                {
-                    command.Id,
-                    DataExclusao = DateTime.Now
-                };
-
-                var resultado = await _repository.ExcluirAtividadeAsync(parametros);
+                var resultado = await _repository.ExcluirAtividadeAsync(command.Id);
 
                 if (!resultado)
-                {
                     return new CommandResult("EEA02 - Erro ao excluir Atividade", 400);
-                }
 
             } catch
             {

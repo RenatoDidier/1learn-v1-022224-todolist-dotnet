@@ -1,6 +1,6 @@
 ﻿using System.Data.SqlClient;
 using Todo.Repository.Repositories;
-using Todo.Repository.Repositories.Contracts;
+using Todo.Shared.Repositories;
 using Todo.Web.Commands;
 using Todo.Web.Handlers;
 using Todo.Web.Handlers.Interfaces;

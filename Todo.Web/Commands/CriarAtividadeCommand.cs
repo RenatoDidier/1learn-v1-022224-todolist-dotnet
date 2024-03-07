@@ -15,7 +15,7 @@ namespace Todo.Web.Commands
         {
             Titulo = titulo;
         }
-        public string Titulo { get; set; }
+        public string Titulo { get; set; } = string.Empty;
         public void ValidarEnvioDados()
         {
             AddNotifications(

@@ -1,6 +1,6 @@
 ﻿using System.Data.SqlClient;
 using Todo.Shared.Models;
-using Todo.Repository.Repositories.Contracts;
+using Todo.Shared.Repositories;
 using Dapper;
 using System.Data;
 using Todo.Shared.ViewModel;
@@ -21,9 +21,15 @@ namespace Todo.Repository.Repositories
             => _connection = connection;
 
 
-        public async Task<List<AtividadeViewModel?>> ListarTodasAtividadesAsync(object parametros)
+        public async Task<List<AtividadeViewModel?>> ListarTodasAtividadesAsync(string titulo, bool? conclusao)
         {
-            List<AtividadeViewModel> listaFinal = new List<AtividadeViewModel>();
+            List<AtividadeViewModel> listaFinal = new();
+
+            var parametros = new
+            {
+                titulo,
+                conclusao
+            };
 
             var resultado = await _connection.QueryAsync<Atividade>(
                     PRC_LISTAR_ATIVIDADES,
@@ -48,13 +54,20 @@ namespace Todo.Repository.Repositories
             return listaFinal;
         }
 
-        public async Task<AtividadeViewModel?> ListarAtividadePorIdAsync(object parametros)
+        public async Task<AtividadeViewModel?> ListarAtividadePorIdAsync(int id)
         {
+
+            var parametros = new
+            {
+                id
+            };
+
             var resultado = await _connection.QueryFirstOrDefaultAsync<Atividade>(
                     PRC_LISTAR_ATIVIDADE_POR_ID,
                     parametros,
                     commandType: CommandType.StoredProcedure
                 );
+
             if (resultado == null)
                 return null;
 
@@ -69,8 +82,14 @@ namespace Todo.Repository.Repositories
         }
 
 
-        public async Task<bool> CriarAtividadeAsync(object parametros)
+        public async Task<bool> CriarAtividadeAsync(string titulo)
         {
+            object parametros = new
+            {
+                titulo,
+                Conclusao = false,
+                DataCriacao = DateTime.Now
+            };
 
             var resultado = await _connection.ExecuteAsync(
                     PRC_CRIAR_ATIVIDADE,
@@ -81,8 +100,15 @@ namespace Todo.Repository.Repositories
             return resultado > 0;
         }
 
-        public async Task<bool> EditarAtividadeAsync(object parametros)
+        public async Task<bool> EditarAtividadeAsync(int id, string titulo, bool conclusao)
         {
+            var parametros = new
+            {
+                id,
+                titulo,
+                conclusao,
+                DataUltimaModificacao = DateTime.Now
+            };
 
             var resultado = await _connection.ExecuteAsync(
                     PRC_EDITAR_ATIVIDADE,
@@ -93,9 +119,13 @@ namespace Todo.Repository.Repositories
             return resultado > 0;
         }
 
-        public async Task<bool> ExcluirAtividadeAsync(object parametros)
+        public async Task<bool> ExcluirAtividadeAsync(int id)
         {
-
+            var parametros = new
+            {
+                id,
+                DataExclusao = DateTime.Now
+            };
             var resultado = await _connection.ExecuteAsync(
                     PRC_EXCLUIR_ATIVIDADE,
                     parametros,

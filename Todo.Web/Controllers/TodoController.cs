@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Todo.Repository.Repositories.Contracts;
+using Todo.Shared.Repositories;
 using Todo.Web.Commands;
 using Todo.Shared.Commands;
 using Todo.Web.Handlers.Interfaces;
@@ -39,11 +39,13 @@ namespace Todo.Web.Controllers
         }
 
         [HttpPost("v1/atividades/listar")]
-        public async Task<ICommandResult> ListarAtividade(
+        public async Task<CommandResult> ListarAtividade(
                 [FromBody] ListarAtividadeCommand atividade
             )
         {
             var acaoListarAtividade = await _handlerListarAtividade.Handle(atividade);
+
+            var teste = acaoListarAtividade.Status;
 
             return acaoListarAtividade;
 
@@ -54,11 +56,8 @@ namespace Todo.Web.Controllers
                 [FromRoute] int id
             )
         {
-            var parametro = new
-            {
-                id
-            };
-            var retornoRepository = await _todoRepository.ListarAtividadePorIdAsync(parametro);
+
+            var retornoRepository = await _todoRepository.ListarAtividadePorIdAsync(id);
 
             if (retornoRepository == null)
                 return new CommandResult(201);
