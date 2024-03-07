@@ -14,6 +14,7 @@ var stringConexao = builder.Configuration.GetConnectionString("DefaultConnection
 
 builder.Services.AddSqlConnection(stringConexao);
 builder.Services.AddRepositories();
+builder.Services.AddServices();
 builder.Services.AddHandlers();
 
 // Configuração do CORS para acesso a qualquer tipo de chamada externa.

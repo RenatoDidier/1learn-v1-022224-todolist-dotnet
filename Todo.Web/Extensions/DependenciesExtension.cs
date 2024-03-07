@@ -1,6 +1,8 @@
 ﻿using System.Data.SqlClient;
 using Todo.Repository.Repositories;
-using Todo.Repository.Repositories.Contracts;
+using Todo.Repository.Services;
+using Todo.Shared.Repositories;
+using Todo.Shared.Services;
 using Todo.Web.Commands;
 using Todo.Web.Handlers;
 using Todo.Web.Handlers.Interfaces;
@@ -21,6 +23,10 @@ namespace Todo.Web.Extensions
         public static void AddRepositories(this IServiceCollection services)
         {
             services.AddTransient<ITodoRepository, TodoRepository>();
+        }
+        public static void AddServices(this IServiceCollection services)
+        {
+            services.AddTransient<IJokeService, JokeService>();
         }
 
         public static void AddHandlers(this IServiceCollection services)

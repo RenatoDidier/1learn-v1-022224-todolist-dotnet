@@ -35,6 +35,12 @@ namespace Todo.Web.Commands
             Dados = dados;
             Status = status;
             Notifications = null;
+        }        
+        public CommandResult(int status, JokeModel dados)
+        {
+            DadosJoke = dados;
+            Status = status;
+            Notifications = null;
         }
         public CommandResult(string mensagem, AtividadeViewModel dados)
         {
@@ -53,6 +59,7 @@ namespace Todo.Web.Commands
 
         public List<AtividadeViewModel?> ListaDados { get; set; } = new List<AtividadeViewModel?>();
         public AtividadeViewModel? Dados { get; set; }
+        public JokeModel? DadosJoke { get; set; }
 
 
     }

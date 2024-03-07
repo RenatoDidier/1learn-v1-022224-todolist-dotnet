@@ -8,7 +8,7 @@ namespace Todo.Web.Commands
     public class ListarAtividadeCommand : Notifiable<Notification>, ICommand
     {
         public string Titulo { get; set; } = string.Empty;
-        public bool? Conclusao { get; set; } = null;
+        public bool? Conclusao { get; set; }
         public void ValidarEnvioDados()
         {
             AddNotifications(new Contract<ListarAtividadeCommand>()
