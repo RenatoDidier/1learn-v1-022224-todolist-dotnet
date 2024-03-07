@@ -82,22 +82,23 @@ namespace Todo.Repository.Repositories
         }
 
 
-        public async Task<bool> CriarAtividadeAsync(string titulo)
+        public async Task<int> CriarAtividadeAsync(string titulo)
         {
-            object parametros = new
-            {
-                titulo,
-                Conclusao = false,
-                DataCriacao = DateTime.Now
-            };
 
-            var resultado = await _connection.ExecuteAsync(
+            var parametros = new DynamicParameters();
+            parametros.Add("@Titulo", titulo);
+            parametros.Add("@Conclusao", false);
+            parametros.Add("@DataCriacao", DateTime.Now);
+            parametros.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+            await _connection.ExecuteAsync(
                     PRC_CRIAR_ATIVIDADE,
                     parametros,
                     commandType: CommandType.StoredProcedure
                 );
 
-            return resultado > 0;
+            return parametros.Get<int>("@Id");
+
         }
 
         public async Task<bool> EditarAtividadeAsync(int id, string titulo, bool conclusao)

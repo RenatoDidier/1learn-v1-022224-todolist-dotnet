@@ -6,7 +6,7 @@ namespace Todo.Shared.Repositories
     {
         Task<List<AtividadeViewModel?>> ListarTodasAtividadesAsync(string titulo, bool? conclusao);
         Task<AtividadeViewModel?> ListarAtividadePorIdAsync(int id);
-        Task<bool> CriarAtividadeAsync(string titulo);
+        Task<int> CriarAtividadeAsync(string titulo);
         Task<bool> EditarAtividadeAsync(int id, string titulo, bool conclusao);
         Task<bool> ExcluirAtividadeAsync(int id);
     }

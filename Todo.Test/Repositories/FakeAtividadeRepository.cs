@@ -5,9 +5,9 @@ namespace Todo.Test.Repositories
 {
     public class FakeAtividadeRepository : ITodoRepository
     {
-        public Task<bool> CriarAtividadeAsync(string titulo)
+        public Task<int> CriarAtividadeAsync(string titulo)
         {
-            return Task.FromResult(true);
+            return Task.FromResult(5);
         }
 
         public Task<bool> EditarAtividadeAsync(int id, string titulo, bool conclusao)

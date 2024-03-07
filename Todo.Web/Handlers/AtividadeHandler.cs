@@ -122,12 +122,13 @@ namespace Todo.Web.Handlers
             }
             #endregion
 
+            int resultadoCriacao;
             #region Criar o usuário
             try
             {
-                var resultadoCriacao = await _repository.CriarAtividadeAsync(command.Titulo);
+                resultadoCriacao = await _repository.CriarAtividadeAsync(command.Titulo);
 
-                if (!resultadoCriacao)
+                if (resultadoCriacao == null)
                     return new CommandResult("Não foi possível inserir a atividade", 400);
 
             } catch
@@ -138,6 +139,7 @@ namespace Todo.Web.Handlers
 
             #region Retorna o resultado
             AtividadeViewModel retornoDados = new AtividadeViewModel();
+            retornoDados.Id = resultadoCriacao;
             retornoDados.Titulo = command.Titulo;
             retornoDados.Conclusao = false;
 
